@@ -1,0 +1,14 @@
+package ui.menu.menu;
+
+public enum MenuChoices {
+    LOAD_XML,
+    SHOW_MACHINE_DATA,
+    SET_CODE_MANUAL,
+    SET_CODE_AUTO,
+    PROCESS_MESSAGE,
+    RESET_CODE,
+    SHOW_HISTORY_AND_STATISTICS,
+    LOAD_SAVED_MACHINE,
+    SAVE_MACHINE,
+    EXIT
+}
