@@ -3,7 +3,6 @@ package loader.builder;
 import loader.generated.BTEPositioning;
 import loader.generated.BTERotor;
 import loader.generated.BTERotors;
-import machine.machine.Machine;
 import machine.component.rotor.Rotor;
 import machine.component.rotor.RotorImpl;
 import machine.utils.Utils;

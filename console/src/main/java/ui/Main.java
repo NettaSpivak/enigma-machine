@@ -49,7 +49,7 @@ public class Main {
                       String rotorsPositions = scanner.nextLine();
                       System.out.print("Enter reflector: ");
                       String reflector = scanner.nextLine();
-                      System.out.println("Enter plugboard pairs (empty line = no plugboard):");
+                      System.out.print("Enter plugboard pairs (empty line = no plugboard):");
                       String plugboard = scanner.nextLine();
                       enigmaManager.setCodeManual(SetCodeManual.setCodeMenual(rotors, rotorsPositions, reflector, plugboard));
                       System.out.println("Manual code set successfully.\n");

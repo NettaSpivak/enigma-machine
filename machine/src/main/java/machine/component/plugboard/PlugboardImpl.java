@@ -1,8 +1,9 @@
 package machine.component.plugboard;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class PlugboardImpl implements Plugboard {
+public class PlugboardImpl implements Plugboard, Serializable {
     private final Map<Character, Character> wiring;
 
     public PlugboardImpl(Map<Character, Character> wiring) {
