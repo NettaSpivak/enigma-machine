@@ -10,8 +10,13 @@ public class Utils {
     }
 
     public static char normalizeLetter(String s) throws IllegalArgumentException {
-        if (s == null || s.trim().length() != 1) {
-            throw new IllegalArgumentException("Letter must be a single character.");
+        if (s == null || s.isEmpty()) {
+            throw new IllegalArgumentException("Input string cannot be null or empty");
+        }
+        if (s.contains(" ") && s.trim().isEmpty())
+            return ' ';
+        if (s.trim().length() != 1) {
+            throw new IllegalArgumentException("Input string must contain exactly one non-space character");
         }
         return Character.toUpperCase(s.trim().charAt(0));
     }
