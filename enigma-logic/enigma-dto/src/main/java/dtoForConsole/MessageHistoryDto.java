@@ -1,4 +1,4 @@
-package dto;
+package dtoForConsole;
 
 public class MessageHistoryDto {
     private String inputMessage;

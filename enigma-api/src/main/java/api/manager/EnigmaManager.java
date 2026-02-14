@@ -1,14 +1,17 @@
-package engine.enigmaManager;
+package api.manager;
 
-import dto.CodeSnapShotDto;
-import dto.MachineDataDto;
-import dto.MachineHistoryDto;
-import dto.MessageDto;
+import dtoForConsole.*;
 import engine.engine.Engine;
-import engine.engine.EngineImpl;
+import org.springframework.stereotype.Service;
 
+
+@Service
 public class EnigmaManager {
-    private Engine engine = new EngineImpl();
+    private final Engine engine;
+
+    public EnigmaManager(Engine engine) {
+        this.engine = engine;
+    }
 
     public void loadXml(String filePath) throws Exception {
         engine.loadXml(filePath.trim());
@@ -43,7 +46,7 @@ public class EnigmaManager {
     }
 
     public void loadSnapshot(String path) throws RuntimeException {
-        engine = engine.loadSnapshot(path.trim());
+        engine.loadSnapshot(path.trim());
     }
 
     public boolean haveCode() {

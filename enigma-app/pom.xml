@@ -4,16 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.5</version>
-        <relativePath/>
+        <groupId>patmal.course.enigma</groupId>
+        <artifactId>enigma-aggregator</artifactId>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
-
-    <groupId>patmal.course.enigma</groupId>
     <artifactId>enigma-app</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -25,15 +21,16 @@
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>3.2.5</version>
         </dependency>
-
         <dependency>
             <groupId>patmal.course.enigma</groupId>
             <artifactId>enigma-api</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
+
 
     <build>
         <plugins>

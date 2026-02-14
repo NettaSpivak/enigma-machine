@@ -1,9 +1,9 @@
-package patmal.course.enigma.app;
+package app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication(scanBasePackages = "patmal.course.enigma")
+@SpringBootApplication
 public class EnigmaApplication {
 
     public static void main(String[] args) {

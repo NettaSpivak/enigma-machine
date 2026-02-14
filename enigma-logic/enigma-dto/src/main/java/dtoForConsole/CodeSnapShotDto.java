@@ -1,4 +1,4 @@
-package dto;
+package dtoForConsole;
 
 import java.util.List;
 

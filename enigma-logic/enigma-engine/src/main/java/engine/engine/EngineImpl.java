@@ -1,6 +1,6 @@
 package engine.engine;
 
-import dto.*;
+import dtoForConsole.*;
 import engine.codeBuilder.CodeBuilder;
 import engine.codeBuilder.CodeBuilderImpl;
 import engine.history.CodeHistory;
@@ -15,9 +15,9 @@ import machine.component.code.CodeSnapShot;
 import machine.machine.Machine;
 import machine.machine.MachineImpl;
 import machine.utils.Utils;
-
 import java.io.*;
 import java.util.*;
+
 
 public class EngineImpl implements Engine, Serializable {
     private static final long serialVersionUID = 1L;
@@ -180,7 +180,7 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public Engine loadSnapshot(String path) throws RuntimeException {
+    public void loadSnapshot(String path) throws RuntimeException {
         if (path == null || path.isBlank()) {
             throw new IllegalArgumentException("Path cannot be empty");
         }
@@ -196,7 +196,10 @@ public class EngineImpl implements Engine, Serializable {
                 throw new IllegalArgumentException("Invalid snapshot file");
             }
 
-            return (Engine ) obj;
+            EngineImpl loadedEngine = (EngineImpl) obj;
+            this.machineRepository = loadedEngine.machineRepository;
+            this.machine = loadedEngine.machine;
+            this.machineHistory = loadedEngine.machineHistory;
 
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException("Failed to load machine state", e);

@@ -1,9 +1,6 @@
 package engine.engine;
 
-import dto.CodeSnapShotDto;
-import dto.MachineDataDto;
-import dto.MachineHistoryDto;
-import dto.MessageDto;
+import dtoForConsole.*;
 
 public interface Engine {
     void loadXml(String filePath) throws Exception;
@@ -14,6 +11,6 @@ public interface Engine {
     void resetCode();
     MachineHistoryDto historyAndStatistics();
     void saveSnapshot(String path);
-    Engine loadSnapshot(String path);
+    void loadSnapshot(String path);
     boolean haveCode();
 }
