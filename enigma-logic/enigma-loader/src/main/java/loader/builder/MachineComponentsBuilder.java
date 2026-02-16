@@ -6,12 +6,13 @@ import machine.component.reflector.Reflector;
 import machine.component.rotor.Rotor;
 import machine.machine.Machine;
 
+import java.io.InputStream;
 import java.util.*;
 
 public class MachineComponentsBuilder {
 
-    public MachineComponents buildMachineComponentsFromXml(String filePath) throws IllegalArgumentException {
-        BTEEnigma bteEnigma = XmlLoader.loadXml(filePath);
+    public MachineComponents buildMachineComponentsFromXml(InputStream inputStream) throws IllegalArgumentException {
+        BTEEnigma bteEnigma = XmlLoader.loadXml(inputStream);
         return buildMachineComponents(bteEnigma);
     }
 

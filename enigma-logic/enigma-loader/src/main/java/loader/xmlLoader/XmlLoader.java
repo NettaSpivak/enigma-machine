@@ -5,24 +5,21 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import java.io.File;
+import java.io.InputStream;
 
 public class XmlLoader {
 
-    public static BTEEnigma loadXml(String filePath) throws RuntimeException{
+    public static BTEEnigma loadXml(InputStream inputStream) throws IllegalArgumentException {
+        if (inputStream == null) {
+            throw new IllegalArgumentException("Uploaded file cannot be empty");
+        }
         try{
-            if (filePath == null || filePath.isBlank()) {
-                throw new IllegalArgumentException("XML file path cannot be empty");
-            }
-
-            if (!filePath.toLowerCase().endsWith(".xml")) {
-                throw new IllegalArgumentException("File must be an XML file (ending with .xml)");
-            }
             JAXBContext jaxbContext = JAXBContext.newInstance(BTEEnigma.class);
             Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            BTEEnigma enigma = (BTEEnigma) jaxbUnmarshaller.unmarshal(new File(filePath));
+            BTEEnigma enigma = (BTEEnigma) jaxbUnmarshaller.unmarshal(inputStream);
             return enigma;
         } catch (JAXBException e) {
-            throw new RuntimeException("Failed to load Enigma configuration from XML: " + filePath, e);
+            throw new IllegalArgumentException("Invalid XML structure: " + e.getMessage(), e);
         }
     }
 

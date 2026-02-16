@@ -1,6 +1,7 @@
 package engine.engine;
 
 import dtoForConsole.*;
+import dto.*;
 import engine.codeBuilder.CodeBuilder;
 import engine.codeBuilder.CodeBuilderImpl;
 import engine.history.CodeHistory;
@@ -26,26 +27,29 @@ public class EngineImpl implements Engine, Serializable {
     private MachineHistory machineHistory;
 
     @Override
-    public void loadXml(String filePath) throws Exception {
+    public String loadXml(InputStream inputStream) throws Exception {
         try {
             MachineComponentsBuilder machineComponentsBuilder = new MachineComponentsBuilder();
-            MachineComponents machineComponents = machineComponentsBuilder.buildMachineComponentsFromXml(filePath);
+            MachineComponents machineComponents = machineComponentsBuilder.buildMachineComponentsFromXml(inputStream);
             this.machineRepository = new MachineRepositoryImpl(machineComponents);
             this.machine = new MachineImpl(machineComponents.getName(), this.machineRepository.getAlphabet());
             this.machineHistory = new MachineHistory();
+            return machine.getName();
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Failed to load XML file: " + e.getMessage(), e);
         } catch (Exception e) {
             throw new Exception("Failed to load XML file: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public MachineDataDto showMachineData() {
+    public MachineStatusDto getMachineStatus() {
         int rotorsInSystem = machineRepository.getNumberOfDefinedRotors();
         int reflectorsInSystem = machineRepository.getNumberOfDefinedReflectors();
         int processedMessageCount = machineHistory.getTotalNumberOfProcessedMessages();
         CodeSnapShot originalCodeSnapShot = machineHistory.getCurrentCodeSnapShot();
         CodeSnapShot currentCodeSnapShot = machine.getCurrentCodeSnapShot();
-        return new MachineDataDto(rotorsInSystem, reflectorsInSystem, processedMessageCount, generateCodeSnapShotToDto(originalCodeSnapShot), generateCodeSnapShotToDto(currentCodeSnapShot));
+        return new MachineStatusDto(rotorsInSystem, reflectorsInSystem, processedMessageCount, generateCodeSnapShotToDto(originalCodeSnapShot), generateCodeSnapShotToDto(currentCodeSnapShot));
     }
 
     private CodeSnapShotDto generateCodeSnapShotToDto(CodeSnapShot codeSnapShot) {

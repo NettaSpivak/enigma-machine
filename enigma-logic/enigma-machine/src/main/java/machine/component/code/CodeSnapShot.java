@@ -34,5 +34,7 @@ public class CodeSnapShot implements Serializable {
         return reflectorId;
     }
 
-    public List<char[]> getPlugboard() { return plugboard; }
+    public List<char[]> getPlugboard() {
+        return plugboard;
+    }
 }

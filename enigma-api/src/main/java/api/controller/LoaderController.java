@@ -1,26 +1,34 @@
 package api.controller;
 
 import api.manager.EnigmaManager;
-import dto.LoadMachineRequest;
+import api.response.load.LoadResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/enigma")
+@RequestMapping("/enigma/load")
 public class LoaderController {
+    private final EnigmaManager manager;
 
-    private final EnigmaManager enigmaManager;
-
-    public LoaderController(EnigmaManager enigmaManager) {
-        this.enigmaManager = enigmaManager;
+    public LoaderController(EnigmaManager manager) {
+        this.manager = manager;
     }
 
-    @PostMapping("/load")
-    public ResponseEntity<?> loadMachine(@RequestBody LoadMachineRequest request) throws Exception {
-        enigmaManager.loadXml(request.getPath());
-        return ResponseEntity.ok().build();
+    @PostMapping(consumes = "multipart/form-data", produces = "application/json")
+    public ResponseEntity<LoadResponse> loadMachine(@RequestParam("file") MultipartFile file) {
+        try {
+            String machineName = manager.loadXml(file);
+            return ResponseEntity.ok(new LoadResponse(true, machineName, null));   // 200
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(new LoadResponse(false, null, e.getMessage()));  // 400
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build(); // 500
+        }
     }
 }

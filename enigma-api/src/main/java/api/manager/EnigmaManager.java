@@ -1,8 +1,13 @@
 package api.manager;
 
+import api.response.config.ConfigResponse;
+import api.response.config.EnigmaCodeStructureResponse;
+import dto.*;
 import dtoForConsole.*;
 import engine.engine.Engine;
+import machine.component.code.CodeSnapShot;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @Service
@@ -13,12 +18,16 @@ public class EnigmaManager {
         this.engine = engine;
     }
 
-    public void loadXml(String filePath) throws Exception {
-        engine.loadXml(filePath.trim());
+    public String loadXml(MultipartFile file) throws Exception {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("File cannot be empty");
+        }
+        return engine.loadXml(file.getInputStream());
     }
 
-    public MachineDataDto getMachineData() {
-        return engine.showMachineData();
+    public ConfigResponse getConfig(String sessionID, boolean verbose) {
+        MachineStatusDto machineStatus = engine.getMachineStatus();
+        return ConfigResponse.fromMachineStatusDto(machineStatus, verbose);
     }
 
     public void setCodeManual(CodeSnapShotDto codeSnapShotDto) throws IllegalArgumentException {
