@@ -1,4 +1,4 @@
-package api.response.error;
+package api.response;
 
 public class ErrorResponse {
     private final String error;

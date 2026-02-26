@@ -29,6 +29,7 @@ public class EngineImpl implements Engine, Serializable {
     @Override
     public String loadXml(InputStream inputStream) throws Exception {
         try {
+            // להוסיף בדיקה שהשם ייחודי!!!
             MachineComponentsBuilder machineComponentsBuilder = new MachineComponentsBuilder();
             MachineComponents machineComponents = machineComponentsBuilder.buildMachineComponentsFromXml(inputStream);
             this.machineRepository = new MachineRepositoryImpl(machineComponents);
@@ -43,7 +44,8 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public MachineStatusDto getMachineStatus() {
+    public MachineStatusDto getMachineStatus() throws IllegalStateException {
+        ensureMachineLoaded();
         int rotorsInSystem = machineRepository.getNumberOfDefinedRotors();
         int reflectorsInSystem = machineRepository.getNumberOfDefinedReflectors();
         int processedMessageCount = machineHistory.getTotalNumberOfProcessedMessages();
@@ -62,10 +64,12 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public void codeManual(CodeSnapShotDto codeSnapShotDto) throws IllegalArgumentException {
+    public void codeManual(String sessionId, CodeSnapShotDto codeSnapShotDto) throws IllegalArgumentException {
         try {
+            // כרגע sessionID לא בשימוש — נשנה כשנוסיף sessions
+            ensureMachineLoaded();
             CodeBuilder codeBuilder = new CodeBuilderImpl(machineRepository);
-            Code newCode = codeBuilder.buildCode(codeSnapShotDto.getRotorIds(), codeSnapShotDto.getRotorPosition(), codeSnapShotDto.getReflectorId(), codeSnapShotDto.getPlugboard());
+            Code newCode = codeBuilder.buildCode(codeSnapShotDto.getRotorIds(), codeSnapShotDto.getRotorPositions(), codeSnapShotDto.getReflectorId(), codeSnapShotDto.getPlugboard());
             machine.setCode(newCode);
             machineHistory.addNewCodeToHistory(newCode);
         } catch (NumberFormatException e) {
@@ -74,8 +78,10 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public void codeAutomatic() throws IllegalArgumentException {
+    public void codeAutomatic(String sessionId) throws IllegalArgumentException {
         try {
+            // כרגע sessionID לא בשימוש — נשנה כשנוסיף sessions
+            ensureMachineLoaded();
             Random random = new Random();
             // generate random rotors ids
             int numOfRotors = machineRepository.getNumberOfDefinedRotors();
@@ -117,30 +123,37 @@ public class EngineImpl implements Engine, Serializable {
     }
 
     @Override
-    public MessageDto processMessage(MessageDto messagedto) throws IllegalArgumentException {
+    public ProcessMessageDto processMessage(String message, String sessionID) throws IllegalArgumentException {
         try {
-            String message = messagedto.getMessage().toUpperCase();
+            ensureCodeConfigured();
+            String upperMessage = message.toUpperCase();
             long startTime = System.nanoTime();
-            for (char c : message.toCharArray()) {
+
+            for (char c : upperMessage.toCharArray()) {
                 if(!Utils.isInAlphabet(c, machineRepository.getAlphabet())){
                     throw new IllegalArgumentException("Input character " + c + " is not in alphabet");
                 }
             }
             StringBuilder result = new StringBuilder();
-            for (char c : message.toCharArray()) {
+            for (char c : upperMessage.toCharArray()) {
                 result.append(machine.process(c));
             }
             long endTime = System.nanoTime();
             long durationNano = endTime - startTime;
-            this.machineHistory.addMessageToCode(message, result.toString(), durationNano);
-            return new MessageDto(result.toString());
+            this.machineHistory.addMessageToCode(upperMessage, result.toString(), durationNano);
+
+            CodeSnapShotDto currentCodeDto = generateCodeSnapShotToDto(machine.getCurrentCodeSnapShot());
+            return new ProcessMessageDto(result.toString(), currentCodeDto.toPositionsWithNotchCompact());
+
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Failed to process message: " + e.getMessage());
         }
     }
 
     @Override
-    public void resetCode(){
+    public void resetCode(String sessionId) throws IllegalArgumentException {
+        // כרגע sessionID לא בשימוש — נשנה כשנוסיף sessions
+        ensureCodeConfigured();
         machine.resetCode();
     }
 
@@ -210,8 +223,16 @@ public class EngineImpl implements Engine, Serializable {
         }
     }
 
-    public boolean haveCode() {
-        if (this.machine.getCode() == null) return false;
-        else return true;
+    private void ensureMachineLoaded() throws IllegalStateException {
+        if (machine == null || machineRepository == null) {
+            throw new IllegalStateException("Machine not loaded");
+        }
+    }
+
+    private void ensureCodeConfigured() throws IllegalStateException {
+        ensureMachineLoaded();
+        if (machine.getCode() == null) {
+            throw new IllegalStateException("Machine code not configured");
+        }
     }
 }

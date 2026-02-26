@@ -1,10 +1,9 @@
-package api.response.load;
+package api.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class LoadResponse {
-
     private boolean success;
     private String name;
     private String error;

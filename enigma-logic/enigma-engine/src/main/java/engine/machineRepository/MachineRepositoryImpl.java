@@ -8,16 +8,23 @@ import java.io.Serializable;
 import java.util.Map;
 
 public class MachineRepositoryImpl implements MachineRepository, Serializable {
+    private final String machineName;
     private final String alphabet;
     private final Map<Integer, Rotor> rotorsRepository;
     private final Map<String, Reflector> reflectorsRepository;
     private final int numberOfRotorsInUse;
 
     public MachineRepositoryImpl (MachineComponents machineComponents) {
+        this.machineName = machineComponents.getName();
         this.alphabet = machineComponents.getAlphabet().toUpperCase();
         this.rotorsRepository = machineComponents.getRotors();
         this.reflectorsRepository = machineComponents.getReflectors();
         this.numberOfRotorsInUse = machineComponents.getRotorsCount();
+    }
+
+    @Override
+    public String getMachineName() {
+        return this.machineName;
     }
 
     @Override

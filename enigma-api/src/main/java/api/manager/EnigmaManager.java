@@ -1,11 +1,11 @@
 package api.manager;
 
-import api.response.config.ConfigResponse;
-import api.response.config.EnigmaCodeStructureResponse;
+import api.response.ConfigResponse;
+import api.response.ProcessResponse;
+import api.schemas.EnigmaManualConfigRequest;
 import dto.*;
 import dtoForConsole.*;
 import engine.engine.Engine;
-import machine.component.code.CodeSnapShot;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,20 +30,23 @@ public class EnigmaManager {
         return ConfigResponse.fromMachineStatusDto(machineStatus, verbose);
     }
 
-    public void setCodeManual(CodeSnapShotDto codeSnapShotDto) throws IllegalArgumentException {
-        engine.codeManual(codeSnapShotDto);
+    public void setCodeManual(EnigmaManualConfigRequest request) throws IllegalArgumentException {
+        CodeSnapShotDto codeSnapShotDto = request.toCodeSnapShotDto();
+        engine.codeManual(request.getSessionID(), codeSnapShotDto);
     }
 
-    public void setCodeAutomatic() throws IllegalArgumentException {
-        engine.codeAutomatic();
+    public void setCodeAutomatic(String sessionId) throws IllegalArgumentException {
+        engine.codeAutomatic(sessionId);
     }
 
-    public MessageDto processMessage(MessageDto message) throws IllegalArgumentException {
-        return engine.processMessage(message);
+    public ProcessResponse processMessage(String message, String sessionID) throws IllegalArgumentException {
+        ProcessMessageDto messageDto = engine.processMessage(message, sessionID);
+
+        return new ProcessResponse(messageDto.getMessage(), messageDto.getCurrentRotorsPositionCompact());
     }
 
-    public void resetCode() {
-        engine.resetCode();
+    public void resetCode(String sessionId) {
+        engine.resetCode(sessionId);
     }
 
     public MachineHistoryDto historyAndStatistics() {
@@ -57,9 +60,4 @@ public class EnigmaManager {
     public void loadSnapshot(String path) throws RuntimeException {
         engine.loadSnapshot(path.trim());
     }
-
-    public boolean haveCode() {
-        return engine.haveCode();
-    }
-
 }

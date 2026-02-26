@@ -1,5 +1,7 @@
 package dtoForConsole;
 
+import dto.CodeSnapShotDto;
+
 import java.util.List;
 
 public class CodeHistoryDto {

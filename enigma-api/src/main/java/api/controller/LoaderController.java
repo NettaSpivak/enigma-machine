@@ -1,7 +1,7 @@
 package api.controller;
 
 import api.manager.EnigmaManager;
-import api.response.load.LoadResponse;
+import api.response.LoadResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;

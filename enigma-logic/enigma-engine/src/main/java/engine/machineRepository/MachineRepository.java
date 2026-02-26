@@ -4,6 +4,7 @@ import machine.component.reflector.Reflector;
 import machine.component.rotor.Rotor;
 
 public interface MachineRepository {
+    String getMachineName();
     String getAlphabet();
     int getNumberOfRotorsInUse();
     Rotor getRotorById(int id);

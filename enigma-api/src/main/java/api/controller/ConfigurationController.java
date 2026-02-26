@@ -1,8 +1,8 @@
 package api.controller;
 
 import api.manager.EnigmaManager;
-import api.response.config.ConfigResponse;
-import api.response.error.ErrorResponse;
+import api.response.ConfigResponse;
+import api.schemas.EnigmaManualConfigRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,27 +23,56 @@ public class ConfigurationController {
             return ResponseEntity.ok(response);   // 200
 
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));   // 400
-
+            return ResponseEntity.badRequest().body(e.getMessage()); // 400
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(e.getMessage()); // 409
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build(); // 500
+            return ResponseEntity.internalServerError().body("Internal server error"); // 500
         }
     }
 
-    @PostMapping("/manual")
-    public void setManual(@RequestBody CodeSnapShotDto dto) {
-        manager.setCodeManual(dto);
+    @PutMapping(value = "/manual", consumes = "application/json", produces = "text/plain")
+    public ResponseEntity<String> setManual(@RequestBody EnigmaManualConfigRequest request) {
+        try {
+            manager.setCodeManual(request);
+            return ResponseEntity.ok("Manual code set successfully"); // 200
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage()); // 400
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(e.getMessage()); // 409
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Internal server error"); // 500
+        }
     }
 
-    @PostMapping("/auto")
-    public void setAutomatic() {
-        manager.setCodeAutomatic();
+    @PutMapping(value = "/automatic", produces = "text/plain")
+    public ResponseEntity<String> setAutomatic(@RequestParam("sessionID") String sessionID) {
+        try {
+            manager.setCodeAutomatic(sessionID);
+            return ResponseEntity.ok("Automatic code set successfully"); // 200
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage()); // 400
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(e.getMessage()); // 409
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Internal server error"); // 500
+        }
     }
 
-    @PostMapping("/reset")
-    public void reset() {
-        manager.resetCode();
+    @PutMapping(value = "/reset", produces = "text/plain")
+    public ResponseEntity<String> reset(@RequestParam("sessionID") String sessionID) {
+        try {
+            manager.resetCode(sessionID);
+            return ResponseEntity.ok("Code reset successfully"); // 200
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage()); // 400
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(409).body(e.getMessage()); // 409
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Internal server error"); // 500
+        }
     }
-
-
 }
