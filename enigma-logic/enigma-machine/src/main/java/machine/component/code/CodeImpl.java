@@ -6,7 +6,7 @@ import machine.component.plugboard.Plugboard;
 import java.io.Serializable;
 import java.util.*;
 
-public class CodeImpl implements Code, Serializable {
+public class CodeImpl implements Code {
     private final List<Rotor> rotors;
     private final List<RotorPosition> rotorPositions; // the chosen code positions for each rotor
     private final Reflector reflector;

@@ -1,11 +1,11 @@
-package dtoForConsole;
+package dto;
 
 import java.util.List;
 
-public class MachineHistoryDto {
+public class HistoryDto {
     private List<CodeHistoryDto> codeHistoryDto;
 
-    public MachineHistoryDto(List<CodeHistoryDto> codeHistoryDto) {
+    public HistoryDto(List<CodeHistoryDto> codeHistoryDto) {
         this.codeHistoryDto = codeHistoryDto;
     }
 

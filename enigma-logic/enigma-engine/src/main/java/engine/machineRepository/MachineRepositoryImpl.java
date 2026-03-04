@@ -1,25 +1,39 @@
 package engine.machineRepository;
 
-import loader.builder.MachineComponents;
 import machine.component.reflector.Reflector;
+import machine.component.reflector.ReflectorImpl;
 import machine.component.rotor.Rotor;
-
-import java.io.Serializable;
+import machine.component.rotor.RotorImpl;
+import java.util.HashMap;
 import java.util.Map;
 
-public class MachineRepositoryImpl implements MachineRepository, Serializable {
+public class MachineRepositoryImpl implements MachineRepository {
     private final String machineName;
     private final String alphabet;
     private final Map<Integer, Rotor> rotorsRepository;
     private final Map<String, Reflector> reflectorsRepository;
     private final int numberOfRotorsInUse;
 
-    public MachineRepositoryImpl (MachineComponents machineComponents) {
-        this.machineName = machineComponents.getName();
-        this.alphabet = machineComponents.getAlphabet().toUpperCase();
-        this.rotorsRepository = machineComponents.getRotors();
-        this.reflectorsRepository = machineComponents.getReflectors();
-        this.numberOfRotorsInUse = machineComponents.getRotorsCount();
+    public MachineRepositoryImpl (String machineName, String alphabet, Map<Integer, Rotor> rotors, Map<String, Reflector> reflectors, int rotorsCount) {
+        this.machineName = machineName;
+        this.alphabet = alphabet;
+        this.rotorsRepository = rotors;
+        this.reflectorsRepository = reflectors;
+        this.numberOfRotorsInUse = rotorsCount;
+    }
+
+    public MachineRepositoryImpl(MachineRepositoryImpl other) {
+        this.machineName = other.machineName;
+        this.alphabet = other.alphabet;
+        this.numberOfRotorsInUse = other.numberOfRotorsInUse;
+        this.rotorsRepository = new HashMap<>();
+        for (Map.Entry<Integer, Rotor> entry : other.rotorsRepository.entrySet()) {
+            this.rotorsRepository.put(entry.getKey(), new RotorImpl((RotorImpl) entry.getValue()));
+        }
+        this.reflectorsRepository = new HashMap<>();
+        for (Map.Entry<String, Reflector> entry : other.reflectorsRepository.entrySet()) {
+            this.reflectorsRepository.put(entry.getKey(), new ReflectorImpl((ReflectorImpl) entry.getValue()));
+        }
     }
 
     @Override

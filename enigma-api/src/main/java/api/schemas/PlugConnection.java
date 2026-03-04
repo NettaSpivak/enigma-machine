@@ -1,7 +1,6 @@
 package api.schemas;
 
 public class PlugConnection {
-
     private String plug1;
     private String plug2;
 

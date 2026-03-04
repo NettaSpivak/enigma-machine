@@ -1,6 +1,5 @@
 package engine.engine;
 
-import dtoForConsole.*;
 import dto.*;
 import engine.codeBuilder.CodeBuilder;
 import engine.codeBuilder.CodeBuilderImpl;
@@ -9,8 +8,6 @@ import engine.history.MachineHistory;
 import engine.history.MessageHistory;
 import engine.machineRepository.MachineRepository;
 import engine.machineRepository.MachineRepositoryImpl;
-import loader.builder.MachineComponents;
-import loader.builder.MachineComponentsBuilder;
 import machine.component.code.Code;
 import machine.component.code.CodeSnapShot;
 import machine.machine.Machine;
@@ -20,27 +17,22 @@ import java.io.*;
 import java.util.*;
 
 
-public class EngineImpl implements Engine, Serializable {
+public class EngineImpl implements Engine {
     private static final long serialVersionUID = 1L;
     private MachineRepository machineRepository;
     private Machine machine;
     private MachineHistory machineHistory;
 
-    @Override
-    public String loadXml(InputStream inputStream) throws Exception {
-        try {
-            // להוסיף בדיקה שהשם ייחודי!!!
-            MachineComponentsBuilder machineComponentsBuilder = new MachineComponentsBuilder();
-            MachineComponents machineComponents = machineComponentsBuilder.buildMachineComponentsFromXml(inputStream);
-            this.machineRepository = new MachineRepositoryImpl(machineComponents);
-            this.machine = new MachineImpl(machineComponents.getName(), this.machineRepository.getAlphabet());
-            this.machineHistory = new MachineHistory();
-            return machine.getName();
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Failed to load XML file: " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new Exception("Failed to load XML file: " + e.getMessage(), e);
-        }
+    public EngineImpl(MachineRepository machineRepository) {
+        this.machineRepository = machineRepository;
+        this.machine = new MachineImpl(machineRepository.getMachineName(), this.machineRepository.getAlphabet());
+        this.machineHistory = new MachineHistory();
+    }
+
+    public EngineImpl(EngineImpl other) {
+        this.machineRepository = new MachineRepositoryImpl((MachineRepositoryImpl) other.machineRepository);
+        this.machine = new MachineImpl(other.machine.getName(), this.machineRepository.getAlphabet());
+        this.machineHistory = new MachineHistory();
     }
 
     @Override
@@ -139,7 +131,7 @@ public class EngineImpl implements Engine, Serializable {
                 result.append(machine.process(c));
             }
             long endTime = System.nanoTime();
-            long durationNano = endTime - startTime;
+            int durationNano = Math.toIntExact(endTime - startTime);
             this.machineHistory.addMessageToCode(upperMessage, result.toString(), durationNano);
 
             CodeSnapShotDto currentCodeDto = generateCodeSnapShotToDto(machine.getCurrentCodeSnapShot());
@@ -159,68 +151,23 @@ public class EngineImpl implements Engine, Serializable {
 
 
     @Override
-    public MachineHistoryDto historyAndStatistics() {
+    public HistoryDto getHistory(String machineName) {
+        ensureMachineLoaded();
         List<CodeHistoryDto> codeHistoryDto = new ArrayList<>();
         for (CodeHistory codeHistory: machineHistory.getCodeHistory()) {
-            CodeSnapShotDto codeSnapShotDto = generateCodeSnapShotToDto(codeHistory.getCodeSnapShot());
             List<MessageHistoryDto> messageHistoryDto = new ArrayList<>();
             for (MessageHistory messageHistory: codeHistory.getMessageHistory()) {
                 messageHistoryDto.add(generateMessageHistoryToDto(messageHistory));
             }
-            codeHistoryDto.add(new CodeHistoryDto(codeSnapShotDto, messageHistoryDto));
+            codeHistoryDto.add(new CodeHistoryDto(messageHistoryDto));
         }
-        return new MachineHistoryDto(codeHistoryDto);
+        return new HistoryDto(codeHistoryDto);
     }
     private MessageHistoryDto generateMessageHistoryToDto(MessageHistory messageHistory) {
         if (messageHistory == null) {
             return null;
         }
-        return new MessageHistoryDto(messageHistory.getMessage(), messageHistory.getProcessedMessage(), messageHistory.getProcessTimeNano());
-    }
-
-    @Override
-    public void saveSnapshot(String path) throws RuntimeException {
-        if (path == null || path.isBlank()) {
-            throw new IllegalArgumentException("Path cannot be empty");
-        }
-
-        String fullPath = path.endsWith(".bin") ? path : path + ".bin";
-
-        try (ObjectOutputStream out =
-                     new ObjectOutputStream(new FileOutputStream(fullPath))) {
-
-            out.writeObject(this);
-
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to save machine state" + e.getMessage());
-        }
-    }
-
-    @Override
-    public void loadSnapshot(String path) throws RuntimeException {
-        if (path == null || path.isBlank()) {
-            throw new IllegalArgumentException("Path cannot be empty");
-        }
-
-        String fullPath = path.endsWith(".bin") ? path : path + ".bin";
-
-        try (ObjectInputStream in =
-                     new ObjectInputStream(new FileInputStream(fullPath))) {
-
-            Object obj = in.readObject();
-
-            if (!(obj instanceof EngineImpl)) {
-                throw new IllegalArgumentException("Invalid snapshot file");
-            }
-
-            EngineImpl loadedEngine = (EngineImpl) obj;
-            this.machineRepository = loadedEngine.machineRepository;
-            this.machine = loadedEngine.machine;
-            this.machineHistory = loadedEngine.machineHistory;
-
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException("Failed to load machine state", e);
-        }
+        return new MessageHistoryDto(messageHistory.getInput(), messageHistory.getOutput(), messageHistory.getDuration());
     }
 
     private void ensureMachineLoaded() throws IllegalStateException {

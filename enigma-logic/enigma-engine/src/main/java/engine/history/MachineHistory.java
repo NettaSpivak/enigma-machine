@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.Map;
 
 
-public class MachineHistory implements Serializable {
+public class MachineHistory {
     private final List<CodeHistory> codeHistory;
 
     public MachineHistory() {
@@ -34,7 +34,7 @@ public class MachineHistory implements Serializable {
         codeHistory.add(new CodeHistory(newCodeSnapShot));
     }
 
-    public void addMessageToCode(String message, String processedMessage, long processTimeNano) {
+    public void addMessageToCode(String message, String processedMessage, int processTimeNano) {
         codeHistory.getLast().AddNewMessageToHistory(message, processedMessage, processTimeNano);
     }
 

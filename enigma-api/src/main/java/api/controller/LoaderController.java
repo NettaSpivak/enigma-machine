@@ -1,6 +1,6 @@
 package api.controller;
 
-import api.manager.EnigmaManager;
+import api.manager.LoadManager;
 import api.response.LoadResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,9 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/enigma/load")
 public class LoaderController {
-    private final EnigmaManager manager;
+    private final LoadManager manager;
 
-    public LoaderController(EnigmaManager manager) {
+    public LoaderController(LoadManager manager) {
         this.manager = manager;
     }
 

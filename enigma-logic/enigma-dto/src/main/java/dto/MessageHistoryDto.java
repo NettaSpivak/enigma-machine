@@ -1,13 +1,11 @@
-package engine.history;
+package dto;
 
-import java.io.Serializable;
+public class MessageHistoryDto {
+    private String input;
+    private String output;
+    private int duration;
 
-public class MessageHistory {
-    private final String input;
-    private final String output;
-    private final int duration;
-
-    MessageHistory(String input, String output, int duration) {
+    public MessageHistoryDto(String input, String output, int duration) {
         this.input = input;
         this.output = output;
         this.duration = duration;

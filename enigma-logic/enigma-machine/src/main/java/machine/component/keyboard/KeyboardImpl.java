@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class KeyboardImpl implements Keyboard, Serializable {
+public class KeyboardImpl implements Keyboard {
     private final char[] alphabet;
     private final Map<Character, Integer> charToIndexMap = new HashMap<>();
 

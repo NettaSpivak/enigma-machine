@@ -1,23 +1,23 @@
 package api.controller;
 
-import api.manager.ProcessManager;
-import api.response.ProcessResponse;
+import api.manager.HistoryManager;
+import api.response.HistoryResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/enigma/process")
-public class ProcessController {
-    private final ProcessManager manager;
+@RequestMapping("/enigma/history")
+public class HistoryController {
+    private final HistoryManager manager;
 
-    public ProcessController(ProcessManager manager) {
+    public HistoryController(HistoryManager manager) {
         this.manager = manager;
     }
 
-    @PostMapping
-    public ResponseEntity<?> process(@RequestParam("input") String input, @RequestParam("sessionID") String sessionID) {
+    @GetMapping
+    public ResponseEntity<?> getHistory(@RequestParam(value = "sessionID", required = false) String sessionID, @RequestParam(value = "machineName", required = false) String machineName) {
         try {
-            ProcessResponse response = manager.processMessage(input, sessionID);
+            HistoryResponse response = manager.getHistory(sessionID, machineName);
             return ResponseEntity.ok(response);
 
         } catch (IllegalArgumentException e) {

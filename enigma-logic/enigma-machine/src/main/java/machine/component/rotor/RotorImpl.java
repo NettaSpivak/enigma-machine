@@ -2,7 +2,7 @@ package machine.component.rotor;
 
 import java.io.Serializable;
 
-public class RotorImpl implements Rotor, Serializable {
+public class RotorImpl implements Rotor {
     private final int id;
     private final int notchPosition;
     private final char[] right;
@@ -16,6 +16,15 @@ public class RotorImpl implements Rotor, Serializable {
         this.alphabetSize = alphabetSize;
         this.right = right;
         this.left = left;
+    }
+
+    public RotorImpl(RotorImpl other) {
+        this.id = other.id;
+        this.notchPosition = other.notchPosition;
+        this.alphabetSize = other.alphabetSize;
+        this.right = other.right.clone();
+        this.left = other.left.clone();
+        this.currentPosition = other.currentPosition;
     }
 
     @Override

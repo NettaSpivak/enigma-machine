@@ -1,6 +1,6 @@
 package api.controller;
 
-import api.manager.EnigmaManager;
+import api.manager.ConfigurationManager;
 import api.response.ConfigResponse;
 import api.schemas.EnigmaManualConfigRequest;
 import org.springframework.http.ResponseEntity;
@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/enigma/config")
 public class ConfigurationController {
-    private final EnigmaManager manager;
+    private final ConfigurationManager manager;
 
-    public ConfigurationController(EnigmaManager manager) {
+    public ConfigurationController(ConfigurationManager manager) {
         this.manager = manager;
     }
 

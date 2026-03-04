@@ -1,22 +1,23 @@
 package loader.builder;
 
+import engine.machineRepository.MachineRepository;
+import engine.machineRepository.MachineRepositoryImpl;
 import loader.generated.*;
 import loader.xmlLoader.XmlLoader;
 import machine.component.reflector.Reflector;
 import machine.component.rotor.Rotor;
-import machine.machine.Machine;
 
 import java.io.InputStream;
 import java.util.*;
 
 public class MachineComponentsBuilder {
 
-    public MachineComponents buildMachineComponentsFromXml(InputStream inputStream) throws IllegalArgumentException {
+    public MachineRepository buildMachineComponentsFromXml(InputStream inputStream) throws IllegalArgumentException {
         BTEEnigma bteEnigma = XmlLoader.loadXml(inputStream);
-        return buildMachineComponents(bteEnigma);
+        return buildMachineRepository(bteEnigma);
     }
 
-    private MachineComponents buildMachineComponents(BTEEnigma bteEnigma) throws IllegalArgumentException {
+    private MachineRepository buildMachineRepository(BTEEnigma bteEnigma) throws IllegalArgumentException {
         try {
             String name = bteEnigma.getName().trim();
             String alphabet = bteEnigma.getABC().trim().toUpperCase();
@@ -24,7 +25,7 @@ public class MachineComponentsBuilder {
             int rotorsCount = bteEnigma.getRotorsCount().intValue();
             Map<Integer, Rotor> rotors = RotorsBuilder.buildRotors(bteEnigma.getBTERotors(), alphabet, rotorsCount);
             Map<String, Reflector> reflectors = ReflectorsBuilder.buildReflectors(bteEnigma.getBTEReflectors(), alphabet);
-            return new MachineComponents(name, alphabet, rotors, reflectors, rotorsCount);
+            return new MachineRepositoryImpl(name, alphabet, rotors, reflectors, rotorsCount);
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("BteEnigma contains illegal arguments: " + e.getMessage(), e);

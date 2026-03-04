@@ -12,7 +12,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MachineImpl implements Machine, Serializable {
+public class MachineImpl implements Machine {
     private final String name;
     private final Keyboard keyboard;
     private Code code;

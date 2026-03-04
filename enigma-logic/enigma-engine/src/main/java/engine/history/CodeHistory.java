@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CodeHistory implements Serializable {
+public class CodeHistory {
     private final CodeSnapShot codeSnapShot;
     private final List<MessageHistory> messageHistory;
 
@@ -15,7 +15,7 @@ public class CodeHistory implements Serializable {
         this.messageHistory = new ArrayList<>();
     }
 
-    public void AddNewMessageToHistory(String massage, String processedMassage, long processTimeNano) {
+    public void AddNewMessageToHistory(String massage, String processedMassage, int processTimeNano) {
         messageHistory.add(new MessageHistory(massage, processedMassage, processTimeNano));
 
     }
