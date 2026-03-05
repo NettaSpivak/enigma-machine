@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/enigma
+    username: postgres
+    password: enigma
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true

@@ -1,6 +1,5 @@
 package session;
 
-import dal.registry.MachineRegistry;
 import engine.machineRepository.MachineRepository;
 import engine.machineRepository.MachineRepositoryImpl;
 

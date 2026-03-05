@@ -1,17 +1,15 @@
 package loader;
 
-import engine.machineRepository.MachineRepository;
-import loader.builder.MachineComponentsBuilder;
+import loader.builder.MachineEntitiesBuilder;
+import loader.builder.MachineLoadResult;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Loader {
 
-    public MachineRepository load(InputStream inputStream) throws Exception {
+    public MachineLoadResult load(InputStream inputStream) throws Exception {
         try {
-            MachineComponentsBuilder machineComponentsBuilder = new MachineComponentsBuilder();
-            return machineComponentsBuilder.buildMachineComponentsFromXml(inputStream);
+            MachineEntitiesBuilder machineEntitiesBuilder = new MachineEntitiesBuilder();
+            return machineEntitiesBuilder.buildFromXml(inputStream);
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Failed to load XML file: " + e.getMessage(), e);

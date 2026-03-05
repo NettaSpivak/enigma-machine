@@ -1,20 +1,18 @@
 package api.manager;
 
-import dal.registry.MachineRegistry;
-import engine.engine.Engine;
-import engine.machineRepository.MachineRepository;
 import loader.Loader;
+import loader.builder.MachineLoadResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class LoadManager {
     private final Loader loader;
-    private final MachineRegistry machineRegistry;
+    private final MachineManager machineManager;
 
-    public LoadManager(Loader loader, MachineRegistry machineRegistry) {
+    public LoadManager(Loader loader, MachineManager machineManager, MachineRegistry machineRegistry) {
         this.loader = loader;
-        this.machineRegistry = machineRegistry;
+        this.machineManager = machineManager;
     }
 
     public String loadXml(MultipartFile file) throws Exception {
@@ -22,8 +20,8 @@ public class LoadManager {
             throw new IllegalArgumentException("File cannot be empty");
         }
 
-        MachineRepository repository = loader.load(file.getInputStream());
-        machineRegistry.addMachine(repository);
-        return repository.getMachineName();
+        MachineLoadResult machine = loader.load(file.getInputStream());
+        machineManager.saveMachine(machine);
+        return machine.getMachine().getName();
     }
 }

@@ -1,36 +1,32 @@
 package loader.builder;
 
-import engine.machineRepository.MachineRepository;
-import engine.machineRepository.MachineRepositoryImpl;
-import loader.generated.*;
+import dal.entity.MachineEntity;
+import loader.generated.BTEEnigma;
 import loader.xmlLoader.XmlLoader;
-import machine.component.reflector.Reflector;
-import machine.component.rotor.Rotor;
-
 import java.io.InputStream;
-import java.util.*;
+import java.util.List;
 
-public class MachineComponentsBuilder {
+public class MachineEntitiesBuilder {
 
-    public MachineRepository buildMachineComponentsFromXml(InputStream inputStream) throws IllegalArgumentException {
+    public MachineLoadResult buildFromXml(InputStream inputStream) throws IllegalArgumentException {
         BTEEnigma bteEnigma = XmlLoader.loadXml(inputStream);
-        return buildMachineRepository(bteEnigma);
-    }
-
-    private MachineRepository buildMachineRepository(BTEEnigma bteEnigma) throws IllegalArgumentException {
         try {
             String name = bteEnigma.getName().trim();
             String alphabet = bteEnigma.getABC().trim().toUpperCase();
             validateAlphabet(alphabet);
             int rotorsCount = bteEnigma.getRotorsCount().intValue();
-            Map<Integer, Rotor> rotors = RotorsBuilder.buildRotors(bteEnigma.getBTERotors(), alphabet, rotorsCount);
-            Map<String, Reflector> reflectors = ReflectorsBuilder.buildReflectors(bteEnigma.getBTEReflectors(), alphabet);
-            return new MachineRepositoryImpl(name, alphabet, rotors, reflectors, rotorsCount);
+            MachineEntity machine = new MachineEntity();
+            machine.setName(name);
+            machine.setAbc(alphabet);
+            machine.setRotorsCount(rotorsCount);
 
+            List rotors = RotorsEntityBuilder.buildRotors(bteEnigma.getBTERotors(), alphabet, machine.getId(), rotorsCount);
+            List reflectors = ReflectorsEntityBuilder.buildReflectors(bteEnigma.getBTEReflectors(), alphabet, machine.getId());
+
+            return new MachineLoadResult(machine, rotors, reflectors);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("BteEnigma contains illegal arguments: " + e.getMessage(), e);
         }
-
     }
 
     private void validateAlphabet(String alphabet) throws IllegalArgumentException {
@@ -42,10 +38,12 @@ public class MachineComponentsBuilder {
             throw new IllegalArgumentException("ABC must have an even number of characters.");
         }
         // check for unique characters
-        Set<Character> seen = new HashSet<>();
+        boolean[] seen = new boolean[256];
         for (char c : alphabet.toCharArray()) {
-            if (!seen.add(c))
+            if (seen[c]) {
                 throw new IllegalArgumentException("ABC contains duplicate character: " + c);
+            }
+            seen[c] = true;
         }
     }
 }
