@@ -20,13 +20,20 @@ public class DBMachine {
     }
 
     @Transactional
-    public void saveMachineWithComponents(MachineEntity machine, List<MachineRotorEntity> rotors, List<MachineReflectorEntity> reflectors) {
+    public void saveMachineToDB(MachineEntity machine, List<MachineRotorEntity> rotors, List<MachineReflectorEntity> reflectors) {
         MachineEntity savedMachine = machineRepository.save(machine);
         UUID machineId = savedMachine.getId();
         rotors.forEach(r -> r.setMachineId(machineId));
         reflectors.forEach(r -> r.setMachineId(machineId));
         rotorRepository.saveAll(rotors);
         reflectorRepository.saveAll(reflectors);
+    }
+
+    public engine.machineRepository.MachineRepository loadMachineFromDB(String machineName) throws IllegalArgumentException {
+        MachineEntity machine = getMachine(machineName);
+        List<MachineRotorEntity> rotors = getRotors(machine.getId());
+        List<MachineReflectorEntity> reflectors = getReflectors(machine.getId());
+        return MachineBuilderFromDB.buildMachineFromDB(machine, rotors, reflectors);
     }
 
     public MachineEntity getMachine(String name) throws IllegalArgumentException {

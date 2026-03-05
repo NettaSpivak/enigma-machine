@@ -10,7 +10,7 @@ public class LoadManager {
     private final Loader loader;
     private final MachineManager machineManager;
 
-    public LoadManager(Loader loader, MachineManager machineManager, MachineRegistry machineRegistry) {
+    public LoadManager(Loader loader, MachineManager machineManager) {
         this.loader = loader;
         this.machineManager = machineManager;
     }
@@ -21,7 +21,7 @@ public class LoadManager {
         }
 
         MachineLoadResult machine = loader.load(file.getInputStream());
-        machineManager.saveMachine(machine);
+        machineManager.saveMachineToDB(machine);
         return machine.getMachine().getName();
     }
 }

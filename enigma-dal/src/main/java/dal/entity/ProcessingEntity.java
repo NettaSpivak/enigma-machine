@@ -30,4 +30,44 @@ public class ProcessingEntity {
     private long time;
 
     public ProcessingEntity() {}
+
+    public UUID getId() {
+        return id;
+    }
+    public UUID getMachineId() {
+        return machineId;
+    }
+    public void setMachineId(UUID machineId) {
+        this.machineId = machineId;
+    }
+    public String getSessionId() {
+        return sessionId;
+    }
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+    public String getCode() {
+        return code;
+    }
+    public void setCode(String code) {
+        this.code = code;
+    }
+    public String getInput() {
+        return input;
+    }
+    public void setInput(String input) {
+        this.input = input;
+    }
+    public String getOutput() {
+        return output;
+    }
+    public void setOutput(String output) {
+        this.output = output;
+    }
+    public long getTime() {
+        return time;
+    }
+    public void setTime(long time) {
+        this.time = time;
+    }
 }

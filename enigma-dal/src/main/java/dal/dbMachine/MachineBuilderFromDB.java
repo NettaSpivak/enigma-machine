@@ -1,4 +1,4 @@
-package dal.builder;
+package dal.dbMachine;
 
 import dal.entity.MachineEntity;
 import dal.entity.MachineReflectorEntity;

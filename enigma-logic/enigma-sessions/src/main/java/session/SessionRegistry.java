@@ -1,25 +1,16 @@
 package session;
 
 import engine.machineRepository.MachineRepository;
-import engine.machineRepository.MachineRepositoryImpl;
-
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SessionRegistry {
     private final Map<String, Session> sessions = new ConcurrentHashMap<>();
-    private final MachineRegistry machineRegistry;
 
-    public SessionRegistry(MachineRegistry machineRegistry) {
-        this.machineRegistry = machineRegistry;
-    }
-
-    public String createSession(String machineName) throws IllegalArgumentException {
-        MachineRepository machine = machineRegistry.getMachine(machineName);
-        MachineRepository sessionRepository = new MachineRepositoryImpl((MachineRepositoryImpl) machine);
+    public String createSession(MachineRepository machine) throws IllegalArgumentException {
         String sessionId = UUID.randomUUID().toString();
-        Session session = new Session(sessionId, machineName, sessionRepository);
+        Session session = new Session(sessionId, machine.getMachineName(), machine);
         sessions.put(sessionId, session);
         return sessionId;
     }

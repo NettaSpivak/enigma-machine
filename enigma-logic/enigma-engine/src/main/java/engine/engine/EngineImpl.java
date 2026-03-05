@@ -16,7 +16,6 @@ import machine.utils.Utils;
 import java.io.*;
 import java.util.*;
 
-
 public class EngineImpl implements Engine {
     private static final long serialVersionUID = 1L;
     private MachineRepository machineRepository;
@@ -118,6 +117,7 @@ public class EngineImpl implements Engine {
     public ProcessMessageDto processMessage(String message, String sessionID) throws IllegalArgumentException {
         try {
             ensureCodeConfigured();
+            CodeSnapShotDto currentCodeDto = generateCodeSnapShotToDto(machine.getCurrentCodeSnapShot());
             String upperMessage = message.toUpperCase();
             long startTime = System.nanoTime();
 
@@ -134,8 +134,7 @@ public class EngineImpl implements Engine {
             int durationNano = Math.toIntExact(endTime - startTime);
             this.machineHistory.addMessageToCode(upperMessage, result.toString(), durationNano);
 
-            CodeSnapShotDto currentCodeDto = generateCodeSnapShotToDto(machine.getCurrentCodeSnapShot());
-            return new ProcessMessageDto(result.toString(), currentCodeDto.toPositionsWithNotchCompact());
+            return new ProcessMessageDto(result.toString(), currentCodeDto.toPositionsWithNotchCompact(), durationNano);
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Failed to process message: " + e.getMessage());

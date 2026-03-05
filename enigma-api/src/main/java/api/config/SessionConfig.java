@@ -8,7 +8,7 @@ import session.SessionRegistry;
 public class SessionConfig {
 
     @Bean
-    public SessionRegistry sessionRegistry(MachineRegistry machineRegistry) {
-        return new SessionRegistry(machineRegistry);
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistry();
     }
 }
