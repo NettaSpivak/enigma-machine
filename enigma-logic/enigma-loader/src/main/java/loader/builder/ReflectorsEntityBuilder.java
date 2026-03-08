@@ -11,7 +11,7 @@ import java.util.*;
 
 public class ReflectorsEntityBuilder {
 
-    public static List<MachineReflectorEntity> buildReflectors(BTEReflectors bteReflectors, String alphabet, UUID machineId) {
+    public static List<MachineReflectorEntity> buildReflectors(BTEReflectors bteReflectors, String alphabet, UUID machineId) throws IllegalArgumentException {
         try {
             List<MachineReflectorEntity> reflectors = new ArrayList<>();
             if (bteReflectors.getBTEReflector().isEmpty() || bteReflectors.getBTEReflector().size() > 5) {
@@ -43,7 +43,7 @@ public class ReflectorsEntityBuilder {
         }
     }
 
-    private static MachineReflectorEntity buildReflectorEntity(UUID machineId, BTEReflector reflector, String alphabet) {
+    private static MachineReflectorEntity buildReflectorEntity(UUID machineId, BTEReflector reflector, String alphabet) throws IllegalArgumentException {
         try {
             validateReflector(reflector, alphabet);
 

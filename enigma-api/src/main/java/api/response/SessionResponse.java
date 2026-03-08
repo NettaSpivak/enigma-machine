@@ -1,13 +1,13 @@
 package api.response;
 
 public class SessionResponse {
-    private final String sessionId;
+    private final String sessionID;
 
-    public SessionResponse(String sessionId) {
-        this.sessionId = sessionId;
+    public SessionResponse(String sessionID) {
+        this.sessionID = sessionID;
     }
 
-    public String getSessionId() {
-        return sessionId;
+    public String getSessionID() {
+        return sessionID;
     }
 }

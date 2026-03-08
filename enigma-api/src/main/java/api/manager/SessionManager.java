@@ -5,6 +5,8 @@ import engine.machineRepository.MachineRepository;
 import org.springframework.stereotype.Service;
 import session.SessionRegistry;
 
+import java.util.NoSuchElementException;
+
 @Service
 public class SessionManager {
     private final SessionRegistry sessionRegistry;
@@ -15,15 +17,15 @@ public class SessionManager {
         this.machineManager = machineManager;
     }
 
-    public String createSession(CreateSessionRequest request) throws IllegalArgumentException {
-        if (request == null || request.getMachine() == null || request.getMachine().trim().isEmpty()) {
+    public String createSession(CreateSessionRequest request) throws IllegalStateException, IllegalArgumentException {
+        if (request == null || request.getMachine() == null) { // || request.getMachine().trim().isEmpty()) {
             throw new IllegalArgumentException("Machine name cannot be empty");
         }
         MachineRepository machine = machineManager.loadMachineFromDB(request);
         return sessionRegistry.createSession(machine);
     }
 
-    public void deleteSession(String sessionId) throws IllegalArgumentException {
+    public void deleteSession(String sessionId) throws NoSuchElementException {
         sessionRegistry.deleteSession(sessionId);
     }
 }

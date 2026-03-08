@@ -21,7 +21,7 @@ public class MachineManager {
         dbMachine.saveMachineToDB(result.getMachine(), result.getRotors(), result.getReflectors());
     }
 
-    public MachineRepository loadMachineFromDB(CreateSessionRequest sessionRequest) throws IllegalArgumentException {
+    public MachineRepository loadMachineFromDB(CreateSessionRequest sessionRequest) throws IllegalStateException {
         return dbMachine.loadMachineFromDB(sessionRequest.getMachine());
     }
 }

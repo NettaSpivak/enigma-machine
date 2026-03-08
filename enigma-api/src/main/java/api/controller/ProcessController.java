@@ -15,17 +15,8 @@ public class ProcessController {
     }
 
     @PostMapping
-    public ResponseEntity<?> process(@RequestParam("input") String input, @RequestParam("sessionID") String sessionID) {
-        try {
-            ProcessResponse response = manager.processMessage(input, sessionID);
-            return ResponseEntity.ok(response);
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage()); // 400
-        } catch (IllegalStateException e) {
-            return ResponseEntity.status(409).body(e.getMessage()); // 409
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Internal server error"); // 500
-        }
+    public ResponseEntity<ProcessResponse> process(@RequestParam("input") String input, @RequestParam("sessionID") String sessionID) {
+        ProcessResponse response = manager.processMessage(input, sessionID);
+        return ResponseEntity.ok(response);
     }
 }

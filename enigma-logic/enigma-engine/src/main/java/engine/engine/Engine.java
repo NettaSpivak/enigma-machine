@@ -7,9 +7,9 @@ import java.io.InputStream;
 
 public interface Engine {
     MachineStatusDto getMachineStatus(); // returns some machine dto
-    void codeManual(String sessionId, CodeSnapShotDto codeSnapShotDto);
-    void codeAutomatic(String sessionId);
-    ProcessMessageDto processMessage(String message, String sessionID);
-    void resetCode(String sessionId);
-    HistoryDto getHistory(String machineName);
+    void codeManual(CodeSnapShotDto codeSnapShotDto);
+    void codeAutomatic();
+    ProcessMessageDto processMessage(String message);
+    void resetCode();
+    HistoryDto getHistory();
 }

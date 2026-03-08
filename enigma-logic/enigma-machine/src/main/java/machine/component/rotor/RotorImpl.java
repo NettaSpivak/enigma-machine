@@ -1,6 +1,5 @@
 package machine.component.rotor;
 
-import java.io.Serializable;
 
 public class RotorImpl implements Rotor {
     private final int id;

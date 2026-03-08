@@ -83,6 +83,4 @@ public class MachineRepositoryImpl implements MachineRepository {
     public  int getNumberOfDefinedReflectors() {
         return reflectorsRepository.size();
     }
-
-
 }

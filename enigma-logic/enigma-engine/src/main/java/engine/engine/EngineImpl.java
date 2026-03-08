@@ -3,7 +3,6 @@ package engine.engine;
 import dto.*;
 import engine.codeBuilder.CodeBuilder;
 import engine.codeBuilder.CodeBuilderImpl;
-import engine.history.CodeHistory;
 import engine.history.MachineHistory;
 import engine.history.MessageHistory;
 import engine.machineRepository.MachineRepository;
@@ -35,8 +34,7 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public MachineStatusDto getMachineStatus() throws IllegalStateException {
-        ensureMachineLoaded();
+    public MachineStatusDto getMachineStatus() {
         int rotorsInSystem = machineRepository.getNumberOfDefinedRotors();
         int reflectorsInSystem = machineRepository.getNumberOfDefinedReflectors();
         int processedMessageCount = machineHistory.getTotalNumberOfProcessedMessages();
@@ -55,10 +53,8 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public void codeManual(String sessionId, CodeSnapShotDto codeSnapShotDto) throws IllegalArgumentException {
+    public void codeManual(CodeSnapShotDto codeSnapShotDto) throws IllegalArgumentException {
         try {
-            // כרגע sessionID לא בשימוש — נשנה כשנוסיף sessions
-            ensureMachineLoaded();
             CodeBuilder codeBuilder = new CodeBuilderImpl(machineRepository);
             Code newCode = codeBuilder.buildCode(codeSnapShotDto.getRotorIds(), codeSnapShotDto.getRotorPositions(), codeSnapShotDto.getReflectorId(), codeSnapShotDto.getPlugboard());
             machine.setCode(newCode);
@@ -69,10 +65,8 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public void codeAutomatic(String sessionId) throws IllegalArgumentException {
+    public void codeAutomatic() throws RuntimeException {
         try {
-            // כרגע sessionID לא בשימוש — נשנה כשנוסיף sessions
-            ensureMachineLoaded();
             Random random = new Random();
             // generate random rotors ids
             int numOfRotors = machineRepository.getNumberOfDefinedRotors();
@@ -109,15 +103,15 @@ public class EngineImpl implements Engine {
             machine.setCode(newCode);
             machineHistory.addNewCodeToHistory(newCode);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Failed to generate automatic code: " + e.getMessage());
+            throw new RuntimeException("Failed to generate automatic code: " + e.getMessage());
         }
     }
 
     @Override
-    public ProcessMessageDto processMessage(String message, String sessionID) throws IllegalArgumentException {
+    public ProcessMessageDto processMessage(String message) throws IllegalArgumentException, IllegalStateException {
+        ensureCodeConfigured();
         try {
-            ensureCodeConfigured();
-            CodeSnapShotDto currentCodeDto = generateCodeSnapShotToDto(machine.getCurrentCodeSnapShot());
+            String codeBeforeProcessingCompact = generateCodeSnapShotToDto(machine.getCurrentCodeSnapShot()).toCompactString();
             String upperMessage = message.toUpperCase();
             long startTime = System.nanoTime();
 
@@ -131,10 +125,10 @@ public class EngineImpl implements Engine {
                 result.append(machine.process(c));
             }
             long endTime = System.nanoTime();
-            int durationNano = Math.toIntExact(endTime - startTime);
-            this.machineHistory.addMessageToCode(upperMessage, result.toString(), durationNano);
-
-            return new ProcessMessageDto(result.toString(), currentCodeDto.toPositionsWithNotchCompact(), durationNano);
+            int durationNano = (int) (endTime - startTime);
+            this.machineHistory.SaveMessageToHistory(codeBeforeProcessingCompact, upperMessage, result.toString(), durationNano);
+            CodeSnapShotDto currentCodeDto = generateCodeSnapShotToDto(machine.getCurrentCodeSnapShot());
+            return new ProcessMessageDto(result.toString(), currentCodeDto.toPositionsWithNotchCompact(), codeBeforeProcessingCompact, durationNano);
 
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Failed to process message: " + e.getMessage());
@@ -142,25 +136,24 @@ public class EngineImpl implements Engine {
     }
 
     @Override
-    public void resetCode(String sessionId) throws IllegalArgumentException {
-        // כרגע sessionID לא בשימוש — נשנה כשנוסיף sessions
+    public void resetCode() throws IllegalStateException {
         ensureCodeConfigured();
         machine.resetCode();
     }
 
 
     @Override
-    public HistoryDto getHistory(String machineName) {
-        ensureMachineLoaded();
-        List<CodeHistoryDto> codeHistoryDto = new ArrayList<>();
-        for (CodeHistory codeHistory: machineHistory.getCodeHistory()) {
+    public HistoryDto getHistory() {
+        Map<String, List<MessageHistory>> messageHistory = machineHistory.getMessageHistoryByCodeDescription();
+        Map<String, List<MessageHistoryDto>> messageHistoryByCodeDescriptionDto = new LinkedHashMap<>();
+        for (Map.Entry<String, List<MessageHistory>> entry : messageHistory.entrySet()) {
             List<MessageHistoryDto> messageHistoryDto = new ArrayList<>();
-            for (MessageHistory messageHistory: codeHistory.getMessageHistory()) {
-                messageHistoryDto.add(generateMessageHistoryToDto(messageHistory));
+            for (MessageHistory message : entry.getValue()) {
+                messageHistoryDto.add(generateMessageHistoryToDto(message));
             }
-            codeHistoryDto.add(new CodeHistoryDto(messageHistoryDto));
+            messageHistoryByCodeDescriptionDto.put(entry.getKey(), messageHistoryDto);
         }
-        return new HistoryDto(codeHistoryDto);
+        return new HistoryDto(messageHistoryByCodeDescriptionDto);
     }
     private MessageHistoryDto generateMessageHistoryToDto(MessageHistory messageHistory) {
         if (messageHistory == null) {
@@ -169,14 +162,8 @@ public class EngineImpl implements Engine {
         return new MessageHistoryDto(messageHistory.getInput(), messageHistory.getOutput(), messageHistory.getDuration());
     }
 
-    private void ensureMachineLoaded() throws IllegalStateException {
-        if (machine == null || machineRepository == null) {
-            throw new IllegalStateException("Machine not loaded");
-        }
-    }
 
     private void ensureCodeConfigured() throws IllegalStateException {
-        ensureMachineLoaded();
         if (machine.getCode() == null) {
             throw new IllegalStateException("Machine code not configured");
         }

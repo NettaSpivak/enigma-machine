@@ -1,15 +1,16 @@
 package dto;
 
 import java.util.List;
+import java.util.Map;
 
 public class HistoryDto {
-    private List<CodeHistoryDto> codeHistoryDto;
+    private  Map<String, List<MessageHistoryDto>> messageHistoryByCodeDescriptionDto;
 
-    public HistoryDto(List<CodeHistoryDto> codeHistoryDto) {
-        this.codeHistoryDto = codeHistoryDto;
+    public HistoryDto(Map<String, List<MessageHistoryDto>> messageHistoryByCodeDescriptionDto) {
+        this.messageHistoryByCodeDescriptionDto = messageHistoryByCodeDescriptionDto;
     }
 
-    public List<CodeHistoryDto> getCodeHistoryDto() {
-        return this.codeHistoryDto;
+    public Map<String, List<MessageHistoryDto>> getMessageHistoryByCodeDescriptionDto() {
+        return this.messageHistoryByCodeDescriptionDto;
     }
 }

@@ -7,8 +7,6 @@ import machine.component.plugboard.Plugboard;
 import machine.component.rotor.Direction;
 import machine.component.keyboard.Keyboard;
 import machine.component.rotor.Rotor;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 

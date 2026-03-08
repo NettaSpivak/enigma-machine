@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import session.Session;
 import session.SessionRegistry;
 
+import java.util.NoSuchElementException;
+
 @Service
 public class ConfigurationManager {
     private final SessionRegistry sessionRegistry;
@@ -16,26 +18,26 @@ public class ConfigurationManager {
         this.sessionRegistry = sessionRegistry;
     }
 
-    public ConfigResponse getConfig(String sessionID, boolean verbose) {
+    public ConfigResponse getConfig(String sessionID, boolean verbose) throws NoSuchElementException {
         Session session = sessionRegistry.getSession(sessionID);
         MachineStatusDto machineStatus = session.getEngine().getMachineStatus();
         return ConfigResponse.fromMachineStatusDto(machineStatus, verbose);
     }
 
-    public void setCodeManual(EnigmaManualConfigRequest request) throws IllegalArgumentException {
+    public void setCodeManual(EnigmaManualConfigRequest request) throws NoSuchElementException, IllegalArgumentException {
         CodeSnapShotDto codeSnapShotDto = request.toCodeSnapShotDto();
         String sessionID = request.getSessionID();
         Session session = sessionRegistry.getSession(sessionID);
-        session.getEngine().codeManual(request.getSessionID(), codeSnapShotDto);
+        session.getEngine().codeManual(codeSnapShotDto);
     }
 
-    public void setCodeAutomatic(String sessionID) throws IllegalArgumentException {
+    public void setCodeAutomatic(String sessionID) throws NoSuchElementException {
         Session session = sessionRegistry.getSession(sessionID);
-        session.getEngine().codeAutomatic(sessionID);
+        session.getEngine().codeAutomatic();
     }
 
-    public void resetCode(String sessionID) throws IllegalArgumentException {
+    public void resetCode(String sessionID) throws NoSuchElementException, IllegalStateException {
         Session session = sessionRegistry.getSession(sessionID);
-        session.getEngine().resetCode(sessionID);
+        session.getEngine().resetCode();
     }
 }

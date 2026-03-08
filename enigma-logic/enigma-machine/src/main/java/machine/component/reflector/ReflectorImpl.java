@@ -1,6 +1,5 @@
 package machine.component.reflector;
 
-import java.io.Serializable;
 
 public class ReflectorImpl implements Reflector {
     private final String id;

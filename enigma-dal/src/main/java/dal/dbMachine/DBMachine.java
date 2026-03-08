@@ -29,15 +29,15 @@ public class DBMachine {
         reflectorRepository.saveAll(reflectors);
     }
 
-    public engine.machineRepository.MachineRepository loadMachineFromDB(String machineName) throws IllegalArgumentException {
+    public engine.machineRepository.MachineRepository loadMachineFromDB(String machineName) throws IllegalStateException {
         MachineEntity machine = getMachine(machineName);
         List<MachineRotorEntity> rotors = getRotors(machine.getId());
         List<MachineReflectorEntity> reflectors = getReflectors(machine.getId());
         return MachineBuilderFromDB.buildMachineFromDB(machine, rotors, reflectors);
     }
 
-    public MachineEntity getMachine(String name) throws IllegalArgumentException {
-        return machineRepository.findByName(name).orElseThrow(() -> new IllegalArgumentException("Unknown machine name: " + name));
+    public MachineEntity getMachine(String name) throws IllegalStateException {
+        return machineRepository.findByName(name).orElseThrow(() -> new IllegalStateException("Unknown machine name: " + name));
     }
 
     public List<MachineRotorEntity> getRotors(UUID machineId) {

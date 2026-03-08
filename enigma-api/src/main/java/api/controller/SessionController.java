@@ -18,28 +18,14 @@ public class SessionController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createSession(@RequestBody CreateSessionRequest request) {
-        try {
-            String sessionID = sessionManager.createSession(request);
-            return ResponseEntity.ok(new SessionResponse(sessionID)); // 200
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(409).body(e.getMessage()); // 409
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Internal server error"); // 500
-        }
+    public ResponseEntity<SessionResponse> createSession(@RequestBody CreateSessionRequest request) {
+        String sessionID = sessionManager.createSession(request);
+        return ResponseEntity.ok(new SessionResponse(sessionID)); // 200
     }
 
     @DeleteMapping
-    public ResponseEntity<?> deleteSession(@RequestParam("sessionID") String sessionID) {
-        try {
-            sessionManager.deleteSession(sessionID);
-            return ResponseEntity.noContent().build(); // 204
-
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(404).body(Map.of("error", e.getMessage())); // 404
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Internal server error"); // 500
-        }
+    public ResponseEntity<Void> deleteSession(@RequestParam("sessionID") String sessionID) {
+        sessionManager.deleteSession(sessionID);
+        return ResponseEntity.noContent().build(); // 204
     }
 }

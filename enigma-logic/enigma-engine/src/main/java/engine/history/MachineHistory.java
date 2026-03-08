@@ -3,20 +3,15 @@ package engine.history;
 import machine.component.code.Code;
 import machine.component.rotor.Rotor;
 import machine.component.code.CodeSnapShot;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
-
+import java.util.*;
 
 public class MachineHistory {
     private final List<CodeHistory> codeHistory;
+    private final Map<String, List<MessageHistory>> messageHistoryByCodeDescription;
 
     public MachineHistory() {
         this.codeHistory = new ArrayList<>();
+        this.messageHistoryByCodeDescription = new LinkedHashMap<>();
     }
 
     public void addNewCodeToHistory(Code code) {
@@ -34,8 +29,12 @@ public class MachineHistory {
         codeHistory.add(new CodeHistory(newCodeSnapShot));
     }
 
-    public void addMessageToCode(String message, String processedMessage, int processTimeNano) {
-        codeHistory.getLast().AddNewMessageToHistory(message, processedMessage, processTimeNano);
+    public void SaveMessageToHistory(String codeBeforeProcessing, String message, String processedMessage, int processTimeNano) {
+        MessageHistory newMessage = new MessageHistory(message, processedMessage, processTimeNano);
+        if (!messageHistoryByCodeDescription.containsKey(codeBeforeProcessing)) {
+            messageHistoryByCodeDescription.put(codeBeforeProcessing, new ArrayList<>());
+        }
+        messageHistoryByCodeDescription.get(codeBeforeProcessing).add(newMessage);
     }
 
     public CodeSnapShot getCurrentCodeSnapShot() {
@@ -46,15 +45,18 @@ public class MachineHistory {
     }
 
     public int getTotalNumberOfProcessedMessages() {
-        int processedMessages = 0;
-        for(CodeHistory codeHistory : this.codeHistory){
-            processedMessages += codeHistory.getNumberOfProcessedMessagesInCode();
+        int totalMessages = 0;
+        for (List<MessageHistory> messageHistories : messageHistoryByCodeDescription.values()) {
+            totalMessages += messageHistories.size();
         }
-        return processedMessages;
+        return totalMessages;
     }
 
     public List<CodeHistory> getCodeHistory() {
         return List.copyOf(codeHistory);
     }
 
+    public Map<String, List<MessageHistory>> getMessageHistoryByCodeDescription() {
+        return Map.copyOf(messageHistoryByCodeDescription);
+    }
 }

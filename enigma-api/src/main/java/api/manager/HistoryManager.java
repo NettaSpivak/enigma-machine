@@ -1,30 +1,29 @@
 package api.manager;
 
 import api.response.HistoryResponse;
+import api.schemas.HistoryEntry;
+import dal.dbProcessing.DBProcessing;
 import dto.HistoryDto;
-import engine.engine.Engine;
 import org.springframework.stereotype.Service;
 import session.Session;
 import session.SessionRegistry;
 
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
 @Service
 public class HistoryManager {
     private final SessionRegistry sessionRegistry;
+    private final DBProcessing dbProcessing;
 
-    public HistoryManager(SessionRegistry sessionRegistry) {
+    public HistoryManager(SessionRegistry sessionRegistry, DBProcessing dbProcessing) {
         this.sessionRegistry = sessionRegistry;
+        this.dbProcessing = dbProcessing;
     }
 
-    public HistoryResponse getHistory(String sessionID, String machineName) throws IllegalArgumentException{
-        if ((sessionID == null && machineName == null) || (sessionID != null && machineName != null)) {
-            throw new IllegalArgumentException("Exactly one of sessionID or machineName must be provided");
-        }
-        if (sessionID != null) {
-            Session session = sessionRegistry.getSession(sessionID);
-            HistoryDto historyDto = session.getEngine().getHistory(session.getMachineName());
-            return HistoryResponse.fromHistoryDto(historyDto);
-        }
-        // history של כל המכונה (בעתיד דרך DB)
-        throw new IllegalArgumentException("Machine history not supported yet");
+    public Map<String, List<HistoryEntry>> getHistory(String sessionID, String machineName) throws IllegalArgumentException {
+        HistoryDto historyDto = dbProcessing.getHistoryFromDB(sessionID, machineName);
+        return HistoryResponse.fromHistoryDto(historyDto).getHistory();
     }
 }

@@ -1,7 +1,9 @@
 package api.controller;
 
 import api.manager.LoadManager;
+import api.response.ErrorResponse;
 import api.response.LoadResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,9 +28,8 @@ public class LoaderController {
 
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(new LoadResponse(false, null, e.getMessage()));  // 400
-
         } catch (Exception e) {
-            return ResponseEntity.internalServerError().build(); // 500
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new LoadResponse(false, null, e.getMessage()));  // 500
         }
     }
 }
