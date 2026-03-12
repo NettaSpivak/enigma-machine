@@ -58,7 +58,7 @@
                 </executions>
                 <configuration>
                     <sources>
-                        <source>src/main/resources/Enigma-Ex3.xsd</source>
+                        <source>src/main/resources</source>
                     </sources>
                     <packageName>loader.generated</packageName>
                 </configuration>
